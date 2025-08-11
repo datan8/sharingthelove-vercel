@@ -49,31 +49,57 @@ const Cart = () => {
       return;
     }
 
+    // Debug: Log cart contents and product structures
+    console.log('🛒 CART DEBUG: Current cart contents:', state.items);
+    console.log('🛒 CART DEBUG: Product structures:', state.items.map(item => ({
+      id: item.product.id,
+      name: item.product.name,
+      stripe_price_id: item.product.stripe_price_id,
+      stripe_product_id: item.product.stripe_product_id,
+      price: item.product.price,
+      quantity: item.quantity,
+      allFields: Object.keys(item.product)
+    })));
+
     // Check if products have required Stripe data
     const invalidItems = state.items.filter(item =>
       !item.product.stripe_price_id || !item.product.stripe_product_id
     );
 
+    console.log('🛒 CART DEBUG: Invalid items (missing stripe IDs):', invalidItems.map(item => ({
+      id: item.product.id,
+      name: item.product.name,
+      has_price_id: !!item.product.stripe_price_id,
+      has_product_id: !!item.product.stripe_product_id,
+      stripe_price_id: item.product.stripe_price_id,
+      stripe_product_id: item.product.stripe_product_id
+    })));
+
     if (invalidItems.length > 0) {
-      setError('Some items in your cart are not available for purchase. Please refresh and try again.');
+      console.error('🛒 CART ERROR: Missing Stripe IDs for items:', invalidItems);
+      setError(`Some items in your cart are missing Stripe price information: ${invalidItems.map(i => i.product.name).join(', ')}. Please refresh the page and try again.`);
       return;
     }
 
     setIsLoading(true);
 
     try {
-      console.log('Creating Stripe Checkout Session...');
-      console.log('Cart items:', state.items.map(item => `${item.product.name} x${item.quantity}`));
-      console.log('Total amount:', state.total, 'NZD');
+      console.log('🚀 CHECKOUT: Creating Stripe Checkout Session...');
+      console.log('🚀 CHECKOUT: Cart items:', state.items.map(item => `${item.product.name} x${item.quantity}`));
+      console.log('🚀 CHECKOUT: Total amount:', state.total, 'NZD');
 
       // Use the new checkout API endpoint
       const apiEndpoint = '/api/checkout';
 
       // Format line items correctly for Stripe Checkout
-      const formattedLineItems = state.items.map(item => ({
-        price: item.product.stripe_price_id, // This should be the Stripe price ID
-        quantity: item.quantity,
-      }));
+      const formattedLineItems = state.items.map(item => {
+        const lineItem = {
+          price: item.product.stripe_price_id, // This should be the Stripe price ID
+          quantity: item.quantity,
+        };
+        console.log(`🚀 CHECKOUT: Line item for ${item.product.name}:`, lineItem);
+        return lineItem;
+      });
 
       // Prepare checkout data with correct format
       const checkoutData = {
@@ -81,7 +107,8 @@ const Cart = () => {
         customerEmail: email.trim(),
       };
 
-      console.log('Calling checkout API:', apiEndpoint);
+      console.log('🚀 CHECKOUT: Formatted checkout data:', checkoutData);
+      console.log('🚀 CHECKOUT: Calling API endpoint:', apiEndpoint);
 
       const response = await fetch(apiEndpoint, {
         method: 'POST',

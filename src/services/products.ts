@@ -97,10 +97,63 @@ class ProductsService {
     } catch (error) {
       console.error('Error fetching products from API:', error);
 
-      // Return empty products if API call fails
+      // Return mock products with proper stripe_price_id fields for testing
+      console.warn('🔧 TESTING: Using mock products with Stripe price IDs for checkout testing');
+
+      const mockProducts: Product[] = [
+        {
+          id: 'prod_test_1',
+          name: 'Lavender Healing Balm',
+          description: 'Organic lavender balm for soothing skin and mind',
+          images: ['/images/hero-bg.jpg'],
+          price: 25.00,
+          currency: 'nzd',
+          category: 'Organic Products',
+          organic: true,
+          featured: true,
+          active: true,
+          metadata: {},
+          stripe_product_id: 'prod_test_1',
+          stripe_price_id: 'price_test_1JKL_lavender_balm'
+        },
+        {
+          id: 'prod_test_2',
+          name: 'Healing Candle - Eucalyptus',
+          description: 'Hand-poured organic eucalyptus candle for aromatherapy',
+          images: ['/images/hero-bg.jpg'],
+          price: 35.00,
+          currency: 'nzd',
+          category: 'Organic Products',
+          organic: true,
+          featured: true,
+          active: true,
+          metadata: {},
+          stripe_product_id: 'prod_test_2',
+          stripe_price_id: 'price_test_2MNO_eucalyptus_candle'
+        },
+        {
+          id: 'prod_test_3',
+          name: 'Natural Room Spray - Lemongrass',
+          description: 'Refreshing lemongrass room spray made with organic essential oils',
+          images: ['/images/hero-bg.jpg'],
+          price: 18.00,
+          currency: 'nzd',
+          category: 'Organic Products',
+          organic: true,
+          featured: true,
+          active: true,
+          metadata: {},
+          stripe_product_id: 'prod_test_3',
+          stripe_price_id: 'price_test_3PQR_lemongrass_spray'
+        }
+      ];
+
       const errorResponse: ProductsResponse = {
-        products: [],
-        warning: `API call failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        products: mockProducts,
+        warning: `API call failed, using mock products for testing: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        source: 'fallback',
+        count: mockProducts.length,
+        message: 'Using mock products with Stripe price IDs for checkout testing'
       };
 
       // Cache the error response briefly

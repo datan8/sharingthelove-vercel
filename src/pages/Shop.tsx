@@ -39,7 +39,18 @@ const Shop = () => {
       console.log('Shop: Loading products from Stripe API...');
 
       const response = await productsPrefetchService.getPrefetchedProducts();
-      console.log('Shop: Products response:', response);
+      console.log('🛍️ SHOP: Products response:', response);
+
+      // Debug: Check product structures
+      console.log('🛍️ SHOP: Product structures:', response.products.map(product => ({
+        id: product.id,
+        name: product.name,
+        stripe_price_id: product.stripe_price_id,
+        stripe_product_id: product.stripe_product_id,
+        price: product.price,
+        hasStripeIds: !!(product.stripe_price_id && product.stripe_product_id),
+        allFields: Object.keys(product)
+      })));
 
       setProducts(response.products);
       setDataSource(response.source || "unknown");
@@ -47,10 +58,10 @@ const Shop = () => {
       setApiMessage(response.message || '');
 
       if (response.error) {
-        console.warn('Shop: API warning:', response.error);
+        console.warn('🛍️ SHOP: API warning:', response.error);
       }
 
-      console.log(`Shop: Successfully loaded ${response.count} products from ${response.source}`);
+      console.log(`🛍️ SHOP: Successfully loaded ${response.count} products from ${response.source}`);
     } catch (err) {
       console.error('Shop: Error loading products:', err);
       setError('Failed to load products. Please try again later.');
@@ -194,7 +205,17 @@ const Shop = () => {
                             {formatPrice(product.price, product.currency)}
                           </span>
                           <Button
-                            onClick={() => addItem(product)}
+                            onClick={() => {
+                              console.log('🛍️ SHOP: Adding product to cart:', {
+                                id: product.id,
+                                name: product.name,
+                                stripe_price_id: product.stripe_price_id,
+                                stripe_product_id: product.stripe_product_id,
+                                price: product.price,
+                                hasStripeIds: !!(product.stripe_price_id && product.stripe_product_id)
+                              });
+                              addItem(product);
+                            }}
                             className="bg-emerald-600 hover:bg-emerald-700 text-white"
                           >
                             <Plus className="h-4 w-4 mr-2" />
