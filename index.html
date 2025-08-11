@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Performance Optimization -->
+  <link rel="preload" href="/images/Background.jpg?v=2025" as="image" />
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+
+  <!-- Fonts: Montserrat & DM Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- SEO Meta Tags -->
+  <title>Sharing the Love Organic Store</title>
+  <meta name="description" content="Buy organic, uplift sixty-four orphans in Viet Nam. Premium organic products that transform lives through commerce-for-good.">
+  <meta name="keywords" content="organic store, organic products, orphans Vietnam, commerce for good, natural wellness, sustainable shopping, ethical products">
+  <meta name="author" content="Sharing the Love">
+
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Sharing the Love Organic Store">
+  <meta property="og:description" content="Buy organic, uplift sixty-four orphans in Viet Nam">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sharingthelove.com">
+  <meta property="og:image" content="/images/Background.jpg">
+  <meta property="og:site_name" content="Sharing the Love">
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sharing the Love Organic Store">
+  <meta name="twitter:description" content="Buy organic, uplift sixty-four orphans in Viet Nam">
+  <meta name="twitter:image" content="/images/Background.jpg">
+
+  <!-- Additional Meta Tags -->
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+  <meta name="revisit-after" content="7 days">
+  <link rel="canonical" href="https://sharingthelove.com">
+
+  <!-- Simple Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('SW registered: ', registration);
+
+            // Simple update handling without loops
+            registration.addEventListener('updatefound', () => {
+              console.log('New service worker available');
+              // Just log the update, don't force refresh
+            });
+
+            // Preload video on fast connections
+            if (navigator.connection &&
+                navigator.connection.effectiveType !== '2g' &&
+                navigator.connection.effectiveType !== 'slow-2g') {
+
+              setTimeout(() => {
+                if (registration.active) {
+                  const messageChannel = new MessageChannel();
+                  messageChannel.port1.onmessage = (event) => {
+                    if (event.data.success) {
+                      console.log('Video preloaded successfully');
+                    }
+                  };
+
+                  registration.active.postMessage(
+                    { type: 'PRELOAD_VIDEO' },
+                    [messageChannel.port2]
+                  );
+                }
+              }, 1000);
+            }
+          })
+          .catch((registrationError) => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

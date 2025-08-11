@@ -1,0 +1,24 @@
+export interface ProductsResponse {
+  products: Product[];
+  warning?: string;
+  success?: boolean;
+  source?: string;
+  count?: number;
+  message?: string;
+  stripeConfigured?: boolean;
+  error?: string;
+  details?: string;
+}
+EOF  
+cd /home/project && cd sharingthelove-site && cat > temp_interface.txt << 'EOF'
+export interface ProductsResponse {
+  products: Product[];
+  warning?: string;
+  success?: boolean;
+  source?: string;
+  count?: number;
+  message?: string;
+  stripeConfigured?: boolean;
+  error?: string;
+  details?: string;
+}
